@@ -1,3 +1,6 @@
+from random import randint
+
+
 class Player(object):
     def __init__(self):
         self.initializeInventory()
@@ -35,6 +38,12 @@ class Player(object):
 
     def setDefense(self):
         self.defense = self.dexterity
+
+    def D6(self, number):
+        value = 0
+        for i in range(number):
+            value += randint(1, 6)
+        return value
 
 
 class Room(object):
@@ -146,7 +155,7 @@ class Pyventure(object):
             for option in self.rooms[self.currentRoom].options:
                 print "\t", option
 
-            self.command = raw_input("What would you like to do?")
+            self.command = raw_input("What would you like to do?:    ")
         getattr(self, self.command)()
 
     def move(self):
@@ -157,7 +166,7 @@ class Pyventure(object):
             for direction in self.rooms[self.currentRoom].exitDirections:
                 print "\t", direction
 
-            self.direction = raw_input("What would you like to do?")
+            self.direction = raw_input("Which direction would you like to go?:    ")
         self.changeRoom()
 
     def changeRoom(self):
