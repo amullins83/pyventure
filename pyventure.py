@@ -51,7 +51,7 @@ class Room(object):
         self.name = name
         self.exitDirections = exitDirections
         self.items = items
-        self.options = ["look", "move", "get", "use"]
+        self.options = ["look", "move", "get", "use", "quit"]
         self.neighbor = {"north": -1, "south": -1, "east": -1, "west": -1}
 
     def describe(self, text):
@@ -142,7 +142,7 @@ class Pyventure(object):
         self.rooms = [Foyer(), LivingRoom(), DiningRoom(), Bedroom()]
 
     def initializeCommands(self):
-        self.validCommands = ["move", "look", "get", "use"]
+        self.validCommands = ["move", "look", "get", "use", "quit"]
 
     def showIntroduction(self):
         print "Pyventure = Win!"
@@ -155,7 +155,7 @@ class Pyventure(object):
             for option in self.rooms[self.currentRoom].options:
                 print "\t", option
 
-            self.command = raw_input("What would you like to do?:    ")
+            self.command = raw_input("What would you like to do?: ")
         getattr(self, self.command)()
 
     def move(self):
@@ -166,7 +166,7 @@ class Pyventure(object):
             for direction in self.rooms[self.currentRoom].exitDirections:
                 print "\t", direction
 
-            self.direction = raw_input("Which direction would you like to go?:    ")
+            self.direction = raw_input("Which direction would you like to go?: ")
         self.changeRoom()
 
     def changeRoom(self):
@@ -180,5 +180,8 @@ class Pyventure(object):
 
     def use(self):
         pass
+
+    def quit(self):
+        self.player.hp = 0
 
 p = Pyventure()
