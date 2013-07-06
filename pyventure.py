@@ -53,15 +53,16 @@ class Player(object):
 
 
 class Item(object):
-    def __init__(self, name, lookText="It's not much to look at."):
+    def __init__(self, name, roomText="", lookText="It's not much to look at."):
         self.name = name
+        self.roomText = roomText
 
     def look(self):
         print self.lookText
 
 
 class Room(object):
-    def __init__(self, name, exitDirections, items=[], lookText="Nothing to see here..."):
+    def __init__(self, name, exitDirections, items=[], lookText="Nothing to see here...\n"):
         self.name = name
         self.exitDirections = exitDirections
         self.items = items
@@ -71,19 +72,23 @@ class Room(object):
         self.lookText = lookText
 
     def describe(self, text):
-        print "You are in the", self.name
+        print "\nYou are in the", self.name, "\n"
         print text
-        print "Exits:"
+        print "\nExits:"
         for direction in self.exitDirections:
             print "\t", direction
 
     def look(self):
         print self.lookText
 
+
         if len(self.items) > 0:
-            print "While looking around, you spot the following item(s):"
             for item in self.items:
-                print item.name
+                print item.roomText
+
+            print "\nWhile looking around, you spot the following item(s):"
+            for item in self.items:
+                print "\t", item.name
 
         self.searched = True
 
@@ -117,7 +122,7 @@ class Foyer(Room):
 
 class LivingRoom(Room):
     def __init__(self):
-        super(LivingRoom, self).__init__("Living Room", ["north", "east"], [Item("Coffee table book")], "There is a book on the coffee table.")
+        super(LivingRoom, self).__init__("Living Room", ["north", "east"], [Item("book", "there is a book on the coffee table", "a giant photo book filled with images of the great pyramids in Egypt. The title: 'Triangular Things I Totally Saw Once'. Author: Justin Bieber.")], "")
         self.text = """
             You have entered a living room shabbily furnished with a television, a well-worn couch, and a coffee table.
         """
@@ -130,7 +135,7 @@ class LivingRoom(Room):
 
 class DiningRoom(Room):
     def __init__(self):
-        super(DiningRoom, self).__init__("Dining Room", ["east"], [Item("Plate", "It's a dinner plate with a faint marinara sauce stain.")], "There is a plate on the dining room table. It looks clean enough, but that's only in comparison to the table itself.")
+        super(DiningRoom, self).__init__("Dining Room", ["east"], [Item("Plate", "There is a plate on the dining room table. It looks clean enough, but that's only in comparison to the table itself.", "It's a dinner plate with a faint marinara sauce stain.")], "")
         self.text = """
             You have entered a dining room. At least, you assume so because the vast majority of the limited floorspace is consumed by
             a single rectangular table that as caked with dust as it is completely lacking in style or character."
@@ -143,7 +148,7 @@ class DiningRoom(Room):
 
 class Bedroom(Room):
     def __init__(self):
-        super(Bedroom, self).__init__("Bedroom", ["west"], [Item("Excalibur", "It's apparently a legendary sword from Arthurian legend, but the jury's still out on that one.")], "The hilt of a magnificent legendary sword is inexplicably protruding from the center of the mattress. Wait, what?!")
+        super(Bedroom, self).__init__("Bedroom", ["west"], [Item("Excalibur", "The hilt of a magnificent legendary sword is inexplicably protruding from the center of the mattress. Wait, what?!", "It's apparently a legendary sword from Arthurian legend, but the jury's still out on that one.")], "")
         self.text = """
             You have entered what must be the single largest pile of dirty t-shirts and random, useless stuff you have ever seen.
             You almost fail to notice the fact that there appears to be a roughly bed-shaped object on the opposite corner of the room
@@ -180,28 +185,34 @@ class Pyventure(object):
         self.validCommands = ["move", "look", "get", "use", "quit"]
 
     def showIntroduction(self):
+        numItems = 0
+        for room in self.rooms:
+            numItems += len(room.items)
+
         print "Pyventure = Win!"
+        print "There are a total of", numItems, "items to collect in this house."
+        print "Gotta get 'em all!\n"
 
     def getCommand(self):
         self.command = ""
         while self.command not in self.validCommands:
 
-            print "Your choices:"
+            print "\nYour choices:"
             for option in self.rooms[self.currentRoom].options:
                 print "\t", option
 
-            self.command = raw_input("What would you like to do?: ")
+            self.command = raw_input("\nWhat would you like to do?: ")
         getattr(self, self.command)()
 
     def move(self):
         self.direction = ""
         while self.direction not in self.rooms[self.currentRoom].exitDirections:
 
-            print "Your choices:"
+            print "\nYour choices:"
             for direction in self.rooms[self.currentRoom].exitDirections:
                 print "\t", direction
 
-            self.direction = raw_input("Which direction would you like to go?: ")
+            self.direction = raw_input("\nWhich direction would you like to go?: ")
         self.changeRoom()
 
     def changeRoom(self):
@@ -218,11 +229,11 @@ class Pyventure(object):
             for item in room.items:
                 itemNames.append(item.name)
             while getItem not in itemNames:
-                print "Your choices:"
+                print "\nYour choices:"
                 for itemName in itemNames:
                     print "\t", itemName
 
-                getItem = raw_input("Which thing would you like to get? ")
+                getItem = raw_input("\nWhich thing would you like to get? ")
             self.player.addToInventory(room.takeItem(getItem))
 
     def use(self):
