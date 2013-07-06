@@ -81,7 +81,6 @@ class Room(object):
     def look(self):
         print self.lookText
 
-
         if len(self.items) > 0:
             for item in self.items:
                 print item.roomText
@@ -167,13 +166,23 @@ class Pyventure(object):
         self.initializeRooms()
         self.currentRoom = 0
         self.showIntroduction()
+        self.command = ""
         if __name__ == "__main__":
             self.main()
 
     def main(self):
-        while(self.player.hp > 0):
+        while(self.player.hp > 0 and self.numItems() > 0 and self.command != "quit"):
             self.rooms[self.currentRoom].describe()
             self.getCommand()
+        if self.command == "quit":
+            print "Though you are reknowned throughout the realms as a brave soul, you bravely run away."
+        elif self.player.hp <= 0:
+            print "You have tragically succombed to an inevitable violent end. Alas! Alack!"
+        elif self.numItems() == 0:
+            print "You have acquired every item in the game. Look at you, you little hoarder! You win!"
+        else:
+            print "For unknown reasons, the game has decided to end now. Maybe it was tired?"
+        print "The end."
 
     def initializePlayer(self):
         self.player = Player()
@@ -184,13 +193,15 @@ class Pyventure(object):
     def initializeCommands(self):
         self.validCommands = ["move", "look", "get", "use", "quit"]
 
-    def showIntroduction(self):
-        numItems = 0
+    def numItems(self):
+        num = 0
         for room in self.rooms:
-            numItems += len(room.items)
+            num += len(room.items)
+        return num
 
+    def showIntroduction(self):
         print "Pyventure = Win!"
-        print "There are a total of", numItems, "items to collect in this house."
+        print "There are a total of", self.numItems(), "items to collect in this house."
         print "Gotta get 'em all!\n"
 
     def getCommand(self):
@@ -240,7 +251,7 @@ class Pyventure(object):
         pass
 
     def quit(self):
-        self.player.hp = 0
+        pass
 
 
 if __name__ == "__main__":
