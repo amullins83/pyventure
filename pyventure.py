@@ -162,7 +162,8 @@ class Pyventure(object):
         self.initializeRooms()
         self.currentRoom = 0
         self.showIntroduction()
-        self.main()
+        if __name__ == "__main__":
+            self.main()
 
     def main(self):
         while(self.player.hp > 0):
@@ -230,4 +231,6 @@ class Pyventure(object):
     def quit(self):
         self.player.hp = 0
 
-p = Pyventure()
+
+if __name__ == "__main__":
+    p = Pyventure()
