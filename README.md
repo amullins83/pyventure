@@ -17,4 +17,4 @@ Download and install [Python](http://python.org). Then open a cmd shell (Start M
 
 ###Everyone else
 
-Navigate to the folder where you downloaded this in your favorite terminal shell and type `python pyventure`.
+Navigate to the folder where you downloaded this in your favorite terminal shell and type `play`.
