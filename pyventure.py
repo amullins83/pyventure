@@ -45,28 +45,59 @@ class Player(object):
             value += randint(1, 6)
         return value
 
+    def addToInventory(self, item):
+        if item.name in self.inventory.keys():
+            self.inventory[item.name]["count"] += 1
+        else:
+            self.inventory[item.name] = {"item": item, "count": 1}
+
+
+class Item(object):
+    def __init__(self, name, lookText="It's not much to look at."):
+        self.name = name
+
+    def look(self):
+        print self.lookText
+
 
 class Room(object):
-    def __init__(self, name, exitDirections, items):
+    def __init__(self, name, exitDirections, items=[], lookText="Nothing to see here..."):
         self.name = name
         self.exitDirections = exitDirections
         self.items = items
         self.options = ["look", "move", "get", "use", "quit"]
         self.neighbor = {"north": -1, "south": -1, "east": -1, "west": -1}
+        self.searched = False
+        self.lookText = lookText
 
     def describe(self, text):
-        print text
-
         print "You are in the", self.name
+        print text
         print "Exits:"
         for direction in self.exitDirections:
             print "\t", direction
+
+    def look(self):
+        print self.lookText
+
+        if len(self.items) > 0:
+            print "While looking around, you spot the following item(s):"
+            for item in self.items:
+                print item.name
+
+        self.searched = True
+
+    def takeItem(self, itemName):
+        for item in self.items:
+            if item.name == itemName:
+                self.items.remove(item)
+                return item
 
 
 class Foyer(Room):
     """The initial room"""
     def __init__(self):
-        super(Foyer, self).__init__("Foyer", ["south", "west"], [])
+        super(Foyer, self).__init__("Foyer", ["south", "west"])
         self.text = """
             You are standing in an entryway with a
             coatrack and a dirty linoleum floor. The walls were
@@ -86,9 +117,9 @@ class Foyer(Room):
 
 class LivingRoom(Room):
     def __init__(self):
-        super(LivingRoom, self).__init__("Living Room", ["north", "east"], ["Coffee table book"])
+        super(LivingRoom, self).__init__("Living Room", ["north", "east"], [Item("Coffee table book")], "There is a book on the coffee table.")
         self.text = """
-
+            You have entered a living room shabbily furnished with a television, a well-worn couch, and a coffee table.
         """
         self.neighbor["north"] = 0
         self.neighbor["east"] = 3
@@ -99,9 +130,10 @@ class LivingRoom(Room):
 
 class DiningRoom(Room):
     def __init__(self):
-        super(DiningRoom, self).__init__("Dining Room", ["east"], ["Plate"])
+        super(DiningRoom, self).__init__("Dining Room", ["east"], [Item("Plate", "It's a dinner plate with a faint marinara sauce stain.")], "There is a plate on the dining room table. It looks clean enough, but that's only in comparison to the table itself.")
         self.text = """
-
+            You have entered a dining room. At least, you assume so because the vast majority of the limited floorspace is consumed by
+            a single rectangular table that as caked with dust as it is completely lacking in style or character."
         """
         self.neighbor["east"] = 0
 
@@ -111,9 +143,11 @@ class DiningRoom(Room):
 
 class Bedroom(Room):
     def __init__(self):
-        super(Bedroom, self).__init__("Bedroom", ["west"], ["Excalibur"])
+        super(Bedroom, self).__init__("Bedroom", ["west"], [Item("Excalibur", "It's apparently a legendary sword from Arthurian legend, but the jury's still out on that one.")], "The hilt of a magnificent legendary sword is inexplicably protruding from the center of the mattress. Wait, what?!")
         self.text = """
-
+            You have entered what must be the single largest pile of dirty t-shirts and random, useless stuff you have ever seen.
+            You almost fail to notice the fact that there appears to be a roughly bed-shaped object on the opposite corner of the room
+            from the entrance. Crossing the room to take a better look at it would probably be a waste of time, not unlike this game.
         """
         self.neighbor["west"] = 1
 
@@ -173,10 +207,22 @@ class Pyventure(object):
         self.currentRoom = self.rooms[self.currentRoom].neighbor[self.direction]
 
     def look(self):
-        pass
+        self.rooms[self.currentRoom].look()
 
     def get(self):
-        pass
+        room = self.rooms[self.currentRoom]
+        if room.searched and len(room.items) > 0:
+            getItem = ""
+            itemNames = []
+            for item in room.items:
+                itemNames.append(item.name)
+            while getItem not in itemNames:
+                print "Your choices:"
+                for itemName in itemNames:
+                    print "\t", itemName
+
+                getItem = raw_input("Which thing would you like to get? ")
+            self.player.addToInventory(room.takeItem(getItem))
 
     def use(self):
         pass
