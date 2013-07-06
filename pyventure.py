@@ -1,3 +1,9 @@
+import os
+
+
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 from random import randint
 
 
@@ -174,6 +180,8 @@ class Pyventure(object):
         while(self.player.hp > 0 and self.numItems() > 0 and self.command != "quit"):
             self.rooms[self.currentRoom].describe()
             self.getCommand()
+            clear()
+
         if self.command == "quit":
             print "Though you are reknowned throughout the realms as a brave soul, you bravely run away."
         elif self.player.hp <= 0:
@@ -229,8 +237,12 @@ class Pyventure(object):
     def changeRoom(self):
         self.currentRoom = self.rooms[self.currentRoom].neighbor[self.direction]
 
+    def wait_for_enter(self):
+        raw_input("\n\nHit enter to continue")
+
     def look(self):
         self.rooms[self.currentRoom].look()
+        self.wait_for_enter()
 
     def get(self):
         room = self.rooms[self.currentRoom]
@@ -246,6 +258,8 @@ class Pyventure(object):
 
                 getItem = raw_input("\nWhich thing would you like to get? ")
             self.player.addToInventory(room.takeItem(getItem))
+            print "\nYou got the", getItem, "!\n"
+            self.wait_for_enter()
 
     def use(self):
         pass
