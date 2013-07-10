@@ -114,12 +114,6 @@ def emptyfunction():
     pass
 
 
-class UseHashItem(dict):
-    def __init__(self, text="", action=emptyfunction):
-        self['text'] = text
-        self['action'] = action
-
-
 class UseHash(defaultdict):
     def __init__(self):
         self.setdefault(dict)
