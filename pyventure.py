@@ -8,19 +8,20 @@ from random import randint
 
 
 class Player(object):
-    def capacityFactor():
+    def capacityFactor(self):
         return 5
 
     def __init__(self):
-        self.initializeInventory()
         self.level = 1
         self.gp = 0
         self.hp = self.maxHP = 100
         self.mp = self.maxMP = 50
         self.rollCharacterSheet()
+        self.initializeInventory()
 
     def initializeInventory(self):
         self.inventory = {}
+        self.remainingCapacity = self.capacity()
 
     def rollCharacterSheet(self):
         self.constitution = self.D6(3)
@@ -63,10 +64,15 @@ class Player(object):
                 self.inventory[item.name]["count"] += 1
             else:
                 self.inventory[item.name] = {"item": item, "count": 1}
+            self.remainingCapacity -= item.size
         else:
             print "You can't carry that."
             if len(self.inventory):
                 print "Try dropping something."
+
+    def use(self, itemName):
+        if itemName in self.inventory:
+            self.inventory[itemName].use()
 
 
 class Item(object):
@@ -274,22 +280,24 @@ class Pyventure(object):
             self.command = raw_input("\nWhat would you like to do?: ")
         getattr(self, self.command)()
 
-    def move(self):
-        self.direction = ""
-        while self.direction not in self.rooms[self.currentRoom].exitDirections:
+    def wait_for_enter(self):
+        raw_input("\n\nHit enter to continue")
 
+    def details(self, prompt, validList):
+        detail = ""
+        while detail not in validList:
             print "\nYour choices:"
-            for direction in self.rooms[self.currentRoom].exitDirections:
-                print "\t", direction
+            for itemName in validList:
+                print "\t", itemName
+            detail = raw_input(prompt)
+        return detail
 
-            self.direction = raw_input("\nWhich direction would you like to go?: ")
+    def move(self):
+        self.direction = self.details("\nWhich direction would you like to go?: ", self.rooms[self.currentRoom].exitDirections)
         self.changeRoom()
 
     def changeRoom(self):
         self.currentRoom = self.rooms[self.currentRoom].neighbor[self.direction]
-
-    def wait_for_enter(self):
-        raw_input("\n\nHit enter to continue")
 
     def look(self):
         self.rooms[self.currentRoom].look()
@@ -298,22 +306,20 @@ class Pyventure(object):
     def get(self):
         room = self.rooms[self.currentRoom]
         if room.searched and len(room.items) > 0:
-            getItem = ""
             itemNames = []
             for item in room.items:
                 itemNames.append(item.name)
-            while getItem not in itemNames:
-                print "\nYour choices:"
-                for itemName in itemNames:
-                    print "\t", itemName
+            getItem = self.details("\nWhich thing would you like to get? ", itemNames)
 
-                getItem = raw_input("\nWhich thing would you like to get? ")
             self.player.addToInventory(room.takeItem(getItem))
             print "\nYou got the", getItem, "!\n"
             self.wait_for_enter()
 
     def use(self):
-        pass
+        if len(self.player.inventory):
+            item = self.details("\nWhich item do you want to use? ", self.player.inventory)
+            self.player.use(item)
+            self.rooms[self.currentRoom].use(item)
 
     def quit(self):
         pass
