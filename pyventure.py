@@ -8,6 +8,9 @@ from random import randint
 
 
 class Player(object):
+    def capacityFactor():
+        return 5
+
     def __init__(self):
         self.initializeInventory()
         self.level = 1
@@ -45,6 +48,9 @@ class Player(object):
     def setDefense(self):
         self.defense = self.dexterity
 
+    def capacity(self):
+        return self.capacityFactor() * self.strength
+
     def D6(self, number):
         value = 0
         for i in range(number):
@@ -52,23 +58,46 @@ class Player(object):
         return value
 
     def addToInventory(self, item):
-        if item.name in self.inventory.keys():
-            self.inventory[item.name]["count"] += 1
+        if item.size <= self.remainingCapacity:
+            if item.name in self.inventory.keys():
+                self.inventory[item.name]["count"] += 1
+            else:
+                self.inventory[item.name] = {"item": item, "count": 1}
         else:
-            self.inventory[item.name] = {"item": item, "count": 1}
+            print "You can't carry that."
+            if len(self.inventory):
+                print "Try dropping something."
 
 
 class Item(object):
-    def __init__(self, name, roomText="", lookText="It's not much to look at."):
+    def __init__(self, name, roomText="", lookText="It's not much to look at.", size=1, useText="Nothing happens.", isConsumed=False):
         self.name = name
         self.roomText = roomText
+        self.size = size
+        self.useText = useText
+        self.isConsumed = isConsumed
+        self.used = False
 
     def look(self):
         print self.lookText
 
+    def use(self):
+        print self.useText
+        if self.isConsumed:
+            self.useText = "You can't use that anymore."
+            self.used = True
+
+
+class Excalibur(Item):
+    def __init__(self):
+        super(Excalibur, self).__init__("Excalibur", "The hilt of a magnificent legendary sword is inexplicably protruding from the center of the mattress. Wait, what?!", "It's apparently a legendary sword from Arthurian legend, but the jury's still out on that one.")
+
 
 class Room(object):
-    def __init__(self, name, exitDirections, items=[], lookText="Nothing to see here...\n"):
+    def replaceText(self, find, replacement):
+        self.text = self.text.replace(find, replacement)
+
+    def __init__(self, name, exitDirections, items=[], lookText="Nothing to see here...\n", useHash={}):
         self.name = name
         self.exitDirections = exitDirections
         self.items = items
@@ -103,11 +132,23 @@ class Room(object):
                 self.items.remove(item)
                 return item
 
+    def use(self, itemName):
+        print self.useHash[itemName]["text"]
+        self.useHash[itemName]["action"]()
+
 
 class Foyer(Room):
     """The initial room"""
+
     def __init__(self):
-        super(Foyer, self).__init__("Foyer", ["south", "west"])
+        useHash = {
+            "Excalibur":
+            {
+                "text": "You slice the coatrack in half!",
+                "action": lambda: self.replaceText("a\n            coatrack and ", "")
+            }
+        }
+        super(Foyer, self).__init__("Foyer", ["south", "west"], useHash=useHash)
         self.text = """
             You are standing in an entryway with a
             coatrack and a dirty linoleum floor. The walls were
@@ -152,8 +193,18 @@ class DiningRoom(Room):
 
 
 class Bedroom(Room):
+    def returnSword(self):
+        self.items.append(Excalibur())
+
     def __init__(self):
-        super(Bedroom, self).__init__("Bedroom", ["west"], [Item("Excalibur", "The hilt of a magnificent legendary sword is inexplicably protruding from the center of the mattress. Wait, what?!", "It's apparently a legendary sword from Arthurian legend, but the jury's still out on that one.")], "")
+        useHash = {
+            "Excalibur":
+            {
+                "text": "You twirl the sword around and wind up getting it stuck back in the bedsheets.",
+                "action": self.returnSword
+            }
+        }
+        super(Bedroom, self).__init__("Bedroom", ["west"], [Excalibur()], "", useHash)
         self.text = """
             You have entered what must be the single largest pile of dirty t-shirts and random, useless stuff you have ever seen.
             You almost fail to notice the fact that there appears to be a roughly bed-shaped object on the opposite corner of the room
