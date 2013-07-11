@@ -1,5 +1,5 @@
-from pyventure.useHash import UseHash
-from pyventure.room import Room
+from ..useHash import UseHash
+from . import Room
 
 
 class Foyer(Room):

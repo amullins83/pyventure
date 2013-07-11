@@ -1,7 +1,5 @@
-import sys
-sys.path = [".."] + sys.path
 import unittest
-from pyventure import Pyventure
+from game import Pyventure
 
 
 class PyventureError(Exception):

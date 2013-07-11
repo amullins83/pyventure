@@ -1,6 +1,6 @@
-from pyventure.room import Room
-from pyventure.item import *
-from pyventure.useHash import UseHash
+from . import Room
+from ..items import *
+from ..useHash import UseHash
 
 
 class Bedroom(Room):

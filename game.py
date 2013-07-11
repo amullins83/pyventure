@@ -8,9 +8,6 @@ def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 from pyventure import *
-from room import *
-from item import *
-from mapventure import *
 
 
 class Pyventure(object):
@@ -43,7 +40,7 @@ class Pyventure(object):
         print "The end."
 
     def initializePlayer(self):
-        self.player = player.Player()
+        self.player = Player()
 
     def initializeRooms(self):
         self.rooms = [Foyer(self), LivingRoom(self), DiningRoom(self), Bedroom(self)]

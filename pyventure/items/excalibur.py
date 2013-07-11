@@ -1,4 +1,4 @@
-from pyventure.item import Item
+from . import Item
 
 
 class Excalibur(Item):
