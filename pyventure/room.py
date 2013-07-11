@@ -1,3 +1,6 @@
+from sys import path
+path.append('rooms')
+
 from useHash import UseHash
 
 
@@ -5,13 +8,11 @@ class Room(object):
     def replaceText(self, find, replacement):
         self.text = self.text.replace(find, replacement)
 
-    def __init__(self, name, exitDirections, game, items=[], lookText="Nothing to see here...\n", useHash=UseHash()):
+    def __init__(self, name, game, items=[], lookText="Nothing to see here...\n", useHash=UseHash()):
         self.name = name
         self.game = game
-        self.exitDirections = exitDirections
         self.items = items
         self.options = game.validCommands
-        self.neighbor = {"north": -1, "south": -1, "east": -1, "west": -1}
         self.searched = False
         self.lookText = lookText
         self.useHash = useHash
@@ -19,9 +20,6 @@ class Room(object):
     def describe(self, text):
         print "\nYou are in the", self.name, "\n"
         print text
-        print "\nExits:"
-        for direction in self.exitDirections:
-            print "\t", direction
 
     def look(self):
         print self.lookText
@@ -48,3 +46,8 @@ class Room(object):
             self.useHash[itemName]["action"]()
         else:
             print "Nothing happens."
+
+from rooms.foyer import Foyer
+from rooms.bed import Bedroom
+from rooms.living import LivingRoom
+from rooms.dining import DiningRoom

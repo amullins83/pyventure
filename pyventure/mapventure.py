@@ -9,6 +9,13 @@ class Neighbor(object):
     def connect(self, direction, newId):
         self.neighbor[direction] = newId
 
+    def validDirections(self):
+        directions = []
+        for direction in self.directionList:
+            if self.neighbor[direction] != -1:
+                directions.append(direction)
+        return directions
+
 
 class Mapventure(object):
     def __init__(self, directionList=["north", "south", "east", "west"]):
@@ -31,3 +38,11 @@ class Mapventure(object):
 
     def isValidId(self, id):
         return id >= 0 and id < len(self.neighbors)
+
+    def validDirections(self, id):
+        return self.neighbors[id].validDirections()
+
+    def showExits(self, id):
+        print "Exits:"
+        for direction in self.validDirections(id):
+            print "\t", direction
