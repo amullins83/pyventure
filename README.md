@@ -13,7 +13,7 @@ This game is an implementation of the idea presented in chapter 9 of Mark J. Guz
 
 ###Windows
 
-Download and install [Python](http://python.org). Then open a cmd shell (Start Menu > Run > cmd or Start Menu > search cmd), navigate to the folder where you downloaded this, and type `python pyventure.py`.
+Download and install [Python](http://python.org). Then open a cmd shell (Start Menu > Run > cmd or Start Menu > search cmd), navigate to the folder where you downloaded this, and type `python game.py`.
 
 ###Everyone else
 

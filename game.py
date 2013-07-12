@@ -1,5 +1,5 @@
 from sys import path
-path.append('pyventure')
+path.append('.')
 
 import os
 
@@ -7,7 +7,7 @@ import os
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-from pyventure import *
+from pyventureClasses import *
 
 
 class Pyventure(object):
