@@ -23,3 +23,7 @@ class TestPyventure:
         roomType = [Foyer, LivingRoom, DiningRoom, Bedroom]
         for room in range(len(self.game.rooms)):
             assert self.game.rooms[room].__class__ == roomType[room]
+
+    def test_map(self):
+        for connection in [(0, 1, "south"), (0, 2, "west"), (1, 0, "north"), (1, 3, "east"), (2, 0, "east")]:
+            assert self.game.map.next(connection[0], connection[2]) == connection[1]
