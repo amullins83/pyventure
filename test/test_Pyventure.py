@@ -5,7 +5,7 @@ from game import Pyventure
 from pyventureClasses import *
 
 
-class TestClass:
+class TestPyventure:
     """Believe it or not, the goal of this class is to test the Pyventure class."""
     def setUp(self):
         self.game = Pyventure()

@@ -43,6 +43,7 @@ class Mapventure(object):
         return self.neighbors[id].validDirections()
 
     def showExits(self, id):
-        print "Exits:"
+        exitText = "Exits:\n"
         for direction in self.validDirections(id):
-            print "\t", direction
+            exitText += "    " + direction + "\n"
+        return exitText

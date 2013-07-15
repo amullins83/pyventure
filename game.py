@@ -26,7 +26,7 @@ class Pyventure(object):
     def main(self):
         while(self.player.hp > 0 and self.numItems() > 0 and self.command != "quit"):
             self.rooms[self.currentRoom].describe()
-            self.map.showExits(self.currentRoom)
+            print self.map.showExits(self.currentRoom)
             self.getCommand()
             clear()
 
