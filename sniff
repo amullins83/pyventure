@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sniffer -x--where -x/c/Documents\ and\ Settings/Student/pyventure/test
