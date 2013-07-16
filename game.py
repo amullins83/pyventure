@@ -11,6 +11,9 @@ def clear():
 from pyventureClasses import *
 
 
+from pyventureClasses.commands import *
+
+
 class Pyventure(object):
     def __init__(self):
         self.initializePlayer()
@@ -57,7 +60,14 @@ class Pyventure(object):
         self.map.connect(3, 1, "west")
 
     def initializeCommands(self):
-        self.validCommands = ["move", "look", "get", "use", "drop", "quit"]
+        self.commands = {
+            "move": Move(self),
+            "look": Look(self),
+            "get":  Get(self),
+            "use":  Use(self),
+            "drop": Drop(self),
+            "quit": Quit(self)
+        }
 
     def numItems(self):
         num = 0
@@ -70,64 +80,12 @@ class Pyventure(object):
         print "There are a total of", self.numItems(), "items to collect in this house."
         print "Gotta get 'em all!\n"
 
-    def wait_for_enter(self):
-        raw_input("\n\nHit enter to continue")
-
-    def details(self, prompt, validList):
-        detail = ""
-        while detail not in validList:
-            print "\nYour choices:"
-            for itemName in validList:
-                print "\t", itemName
-            detail = raw_input(prompt)
-        return detail
-
-    def getCommand(self):
-        self.command = self.details("\nWhat would you like to do?: ", self.rooms[self.currentRoom].options)
-        getattr(self, self.command)()
-
-    def move(self):
-        self.direction = self.details("\nWhich direction would you like to go?: ", self.map.validDirections(self.currentRoom))
-        self.changeRoom()
-
     def changeRoom(self):
         self.currentRoom = self.map.next(self.currentRoom, self.direction)
 
-    def look(self):
-        self.rooms[self.currentRoom].look()
-        self.wait_for_enter()
-
-    def get(self):
-        room = self.rooms[self.currentRoom]
-        if room.searched and len(room.items) > 0:
-            itemNames = []
-            for item in room.items:
-                itemNames.append(item.name)
-            getItem = self.details("\nWhich thing would you like to get? ", itemNames)
-
-            self.player.addToInventory(room.takeItem(getItem))
-            print "\nYou got the", getItem, "!\n"
-            self.wait_for_enter()
-
-    def use(self):
-        if len(self.player.inventory):
-            item = self.details("\nWhich item do you want to use? ", self.player.inventory.keys() + ['nothing'])
-            if item != "nothing":
-                self.player.use(item)
-                self.rooms[self.currentRoom].use(item)
-            self.wait_for_enter()
-
-    def drop(self, itemName=""):
-        if itemName not in self.player.inventory.keys() and len(self.player.inventory):
-            itemName = self.details("\nWhat would you like to drop? ", self.player.inventory.keys() + ['nothing'])
-        if itemName != "nothing":
-            item = self.player.drop(itemName)
-            if item:
-                self.rooms[self.currentRoom].items.append(item)
-
-    def quit(self):
-        pass
-
+    def getCommand(self):
+        self.command = details("\nWhat would you like to do?: ", self.commands)
+        self.commands[self.command].do()
 
 if __name__ == "__main__":
     p = Pyventure()

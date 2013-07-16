@@ -12,7 +12,7 @@ class Room(object):
         self.name = name
         self.game = game
         self.items = items
-        self.options = game.validCommands
+        self.options = game.commands
         self.searched = False
         self.lookText = lookText
         self.useHash = useHash
