@@ -10,6 +10,7 @@ class Player(object):
         self.gp = 0
         self.hp = self.maxHP = 100
         self.mp = self.maxMP = 50
+        self.xp = 0
         self.rollCharacterSheet()
         self.initializeInventory()
 
