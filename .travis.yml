@@ -5,10 +5,3 @@ python:
 # command to install dependencies, using the default
 # command to run tests
 script: nosetests -w test
-services:
-    - mongodb
-env:
-    - MONGOLAB_URI="localhost" MONGOLAB_PORT=27017
-
-before_script: 
-    - mongo pyventure --eval 'db.maps.insert({name:"alpha", neighbors: [{"south":1, "west":2}, {"north":0, "east":3}, {"east":0}, {"west":1}]});'

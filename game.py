@@ -50,20 +50,21 @@ class Pyventure(object):
         self.rooms = [Foyer(self), LivingRoom(self), DiningRoom(self), Bedroom(self)]
 
     def initializeMap(self):
-        neighbors = MongoClient(os.environ["MONGOLAB_URI"], int(os.environ["MONGOLAB_PORT"])).pyventure.maps.find_one({"name": "alpha"})["neighbors"]
+        if "TRAVIS" in os.environ:
+            neighbors = [
+                {"south": 1, "west": 2},
+                {"north": 0, "east": 3},
+                {"east": 0},
+                {"west": 1}
+            ]
+        else:
+            neighbors = MongoClient(os.environ["MONGOLAB_URI"], int(os.environ["MONGOLAB_PORT"])).pyventure.maps.find_one({"name": "alpha"})["neighbors"]
         self.map = Mapventure()
         self.map.add(len(neighbors))
 
         for i in range(len(neighbors)):
             for direction in neighbors[i]:
                 self.map.connect(i, neighbors[i][direction], direction)
-
-        # self.map.connect(0, 1, "south")
-        # self.map.connect(0, 2, "west")
-        # self.map.connect(1, 3, "east")
-        # self.map.connect(1, 0, "north")
-        # self.map.connect(2, 0, "east")
-        # self.map.connect(3, 1, "west")
 
     def initializeCommands(self):
         self.commands = {
